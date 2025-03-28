@@ -1,6 +1,7 @@
 from transformers import AutoTokenizer, AutoModelForTokenClassification, pipeline
 from transformers.pipelines import AggregationStrategy
 import logging
+import numpy as np
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -29,10 +30,12 @@ def extract_legal_entities(text: str):
         entities = []
 
         for r in results:
+            # Convert numpy types to Python native types
+            score = float(r['score']) if isinstance(r['score'], (np.float32, np.float64)) else r['score']
             entities.append({
                 "entity": r['entity_group'],
                 "word": r['word'],
-                "score": round(r['score'], 2)
+                "score": round(score, 2)  # Round to 2 decimal places
             })
 
         return entities
